@@ -1,0 +1,1091 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>知白小店</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    
+    body {
+      font-family: -apple-system, "Helvetica Neue", Arial, sans-serif;
+      background: #fafafa;
+      min-height: 100vh;
+      color: #333;
+    }
+
+    .container {
+      max-width: 500px;
+      margin: 0 auto;
+      padding: 20px;
+      padding-bottom: 100px;
+    }
+
+    /* 登录页 */
+    .login-page {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    .login-title {
+      font-size: 28px;
+      font-weight: 300;
+      letter-spacing: 8px;
+      margin-bottom: 40px;
+      color: #333;
+    }
+
+    .login-btn {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 14px 32px;
+      background: #fff;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      font-size: 15px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .login-btn:hover {
+      border-color: #333;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+
+    .login-btn img {
+      width: 20px;
+      height: 20px;
+    }
+
+    /* 头部 */
+    .header {
+      text-align: center;
+      padding: 20px 0;
+      margin-bottom: 20px;
+    }
+
+    .shop-title {
+      font-size: 22px;
+      font-weight: 300;
+      letter-spacing: 6px;
+      margin-bottom: 8px;
+    }
+
+    .user-info {
+      font-size: 12px;
+      color: #999;
+      margin-bottom: 16px;
+    }
+
+    .role-badge {
+      display: inline-block;
+      padding: 4px 12px;
+      background: #333;
+      color: #fff;
+      font-size: 11px;
+      letter-spacing: 2px;
+      margin-bottom: 16px;
+    }
+
+    .coin-display {
+      display: inline-flex;
+      align-items: baseline;
+      gap: 8px;
+      background: #fff;
+      padding: 10px 24px;
+      border: 1px solid #e0e0e0;
+    }
+
+    .coin-label {
+      font-size: 12px;
+      color: #999;
+    }
+
+    .coin-amount {
+      font-size: 28px;
+      font-weight: 300;
+    }
+
+    /* 导航 */
+    .nav {
+      display: flex;
+      border-bottom: 1px solid #e0e0e0;
+      margin-bottom: 24px;
+      overflow-x: auto;
+    }
+
+    .nav-btn {
+      flex: 1;
+      padding: 14px 8px;
+      background: none;
+      border: none;
+      font-size: 13px;
+      color: #999;
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+      margin-bottom: -1px;
+      white-space: nowrap;
+      transition: all 0.2s;
+    }
+
+    .nav-btn.active {
+      color: #333;
+      border-bottom-color: #333;
+    }
+
+    /* 卡片 */
+    .card {
+      background: #fff;
+      border: 1px solid #eee;
+      padding: 16px;
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .card:hover {
+      border-color: #ccc;
+    }
+
+    .card.disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .card-info {
+      flex: 1;
+    }
+
+    .card-name {
+      font-size: 14px;
+      margin-bottom: 4px;
+    }
+
+    .card-meta {
+      font-size: 11px;
+      color: #aaa;
+    }
+
+    .card-badge {
+      padding: 6px 14px;
+      background: #333;
+      color: #fff;
+      font-size: 12px;
+      min-width: 50px;
+      text-align: center;
+    }
+
+    .card-badge.done {
+      background: #ccc;
+    }
+
+    .card-badge.buy {
+      background: #333;
+    }
+
+    .card-badge.use {
+      background: #666;
+    }
+
+    .card-badge.confirm {
+      background: #4a4;
+    }
+
+    /* 分类标题 */
+    .category-title {
+      font-size: 11px;
+      color: #999;
+      letter-spacing: 3px;
+      margin: 24px 0 12px 0;
+      font-weight: normal;
+    }
+
+    .category-title:first-child {
+      margin-top: 0;
+    }
+
+    /* 提示文字 */
+    .hint {
+      text-align: center;
+      color: #999;
+      font-size: 12px;
+      margin-bottom: 20px;
+    }
+
+    /* 空状态 */
+    .empty {
+      text-align: center;
+      color: #ccc;
+      padding: 60px 20px;
+      font-size: 14px;
+    }
+
+    /* 通知 */
+    .notification {
+      position: fixed;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #333;
+      color: #fff;
+      padding: 12px 28px;
+      border-radius: 4px;
+      font-size: 14px;
+      z-index: 1000;
+      animation: fadeIn 0.3s;
+    }
+
+    .notification.warning {
+      background: #a33;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateX(-50%) translateY(-10px); }
+      to { opacity: 1; transform: translateX(-50%) translateY(0); }
+    }
+
+    /* 管理表单 */
+    .admin-section {
+      margin-bottom: 32px;
+    }
+
+    .admin-title {
+      font-size: 13px;
+      font-weight: 500;
+      margin-bottom: 16px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid #eee;
+    }
+
+    .form-row {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+
+    .form-input {
+      flex: 1;
+      padding: 10px 12px;
+      border: 1px solid #ddd;
+      font-size: 14px;
+      outline: none;
+    }
+
+    .form-input:focus {
+      border-color: #333;
+    }
+
+    .form-input.small {
+      width: 80px;
+      flex: none;
+    }
+
+    .form-btn {
+      padding: 10px 20px;
+      background: #333;
+      color: #fff;
+      border: none;
+      font-size: 13px;
+      cursor: pointer;
+    }
+
+    .form-btn:hover {
+      background: #555;
+    }
+
+    .form-btn.danger {
+      background: #a33;
+    }
+
+    .form-btn.secondary {
+      background: #fff;
+      color: #333;
+      border: 1px solid #ddd;
+    }
+
+    select.form-input {
+      cursor: pointer;
+    }
+
+    /* 待确认列表 */
+    .pending-item {
+      background: #fff;
+      border: 1px solid #e0e0e0;
+      padding: 14px;
+      margin-bottom: 10px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .pending-info {
+      font-size: 13px;
+    }
+
+    .pending-time {
+      font-size: 11px;
+      color: #999;
+      margin-top: 4px;
+    }
+
+    .pending-actions {
+      display: flex;
+      gap: 8px;
+    }
+
+    .pending-btn {
+      padding: 6px 14px;
+      font-size: 12px;
+      border: none;
+      cursor: pointer;
+    }
+
+    .pending-btn.approve {
+      background: #4a4;
+      color: #fff;
+    }
+
+    .pending-btn.reject {
+      background: #eee;
+      color: #666;
+    }
+
+    /* 登出按钮 */
+    .logout-btn {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      padding: 10px 16px;
+      background: #fff;
+      border: 1px solid #ddd;
+      font-size: 12px;
+      color: #999;
+      cursor: pointer;
+    }
+
+    .logout-btn:hover {
+      border-color: #999;
+      color: #333;
+    }
+
+    /* 加载中 */
+    .loading {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      font-size: 14px;
+      color: #999;
+    }
+
+    /* 商品管理卡片 */
+    .manage-card {
+      background: #fff;
+      border: 1px solid #eee;
+      padding: 14px;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .manage-card-info {
+      flex: 1;
+    }
+
+    .manage-card-name {
+      font-size: 14px;
+      margin-bottom: 4px;
+    }
+
+    .manage-card-detail {
+      font-size: 11px;
+      color: #999;
+    }
+
+    .manage-card-actions {
+      display: flex;
+      gap: 6px;
+    }
+
+    .manage-btn {
+      padding: 4px 10px;
+      font-size: 11px;
+      border: 1px solid #ddd;
+      background: #fff;
+      cursor: pointer;
+    }
+
+    .manage-btn:hover {
+      border-color: #333;
+    }
+
+    .manage-btn.danger:hover {
+      border-color: #a33;
+      color: #a33;
+    }
+
+    .stock-badge {
+      display: inline-block;
+      padding: 2px 8px;
+      background: #f5f5f5;
+      font-size: 10px;
+      color: #666;
+      margin-left: 8px;
+    }
+
+    .stock-badge.out {
+      background: #fee;
+      color: #a33;
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <div class="loading">加载中...</div>
+  </div>
+
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+
+  <script>
+    // Firebase 配置
+    const firebaseConfig = {
+      apiKey: "AIzaSyCL3SEMBMgwSgZthHj2f6J8vo-2Xky1ap4",
+      authDomain: "zhibai-shop.firebaseapp.com",
+      projectId: "zhibai-shop",
+      storageBucket: "zhibai-shop.firebasestorage.app",
+      messagingSenderId: "278769004127",
+      appId: "1:278769004127:web:fdb0ea538b4dd0f851f5ea"
+    };
+
+    // 初始化 Firebase
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const db = firebase.firestore();
+
+    // ========== 应用状态 ==========
+    let currentUser = null;
+    let isOwner = false;
+    let shopData = {
+      coins: 0,
+      inventory: [],
+      completedToday: {},
+      lastDate: ''
+    };
+    let activities = [];
+    let shopItems = [];
+    let pendingActivities = [];
+    let activeTab = 'activities';
+
+    // 店主邮箱（你的邮箱）
+    const OWNER_EMAIL = ''; // 留空，第一个登录的用户会成为店主
+
+    // ========== 工具函数 ==========
+    function getTodayString() {
+      return new Date().toISOString().split('T')[0];
+    }
+
+    function showNotification(message, isWarning = false) {
+      const existing = document.querySelector('.notification');
+      if (existing) existing.remove();
+
+      const div = document.createElement('div');
+      div.className = 'notification' + (isWarning ? ' warning' : '');
+      div.textContent = message;
+      document.body.appendChild(div);
+
+      setTimeout(() => div.remove(), 2500);
+    }
+
+    // ========== 数据初始化 ==========
+    async function initializeDefaultData() {
+      // 检查是否已有活动数据
+      const activitiesSnap = await db.collection('activities').get();
+      if (activitiesSnap.empty) {
+        // 初始化默认活动
+        const defaultActivities = [
+          { name: '每日登录打卡', coins: 10, daily: true, selfComplete: true, enabled: true, order: 1 },
+          { name: '今日赞美知白', coins: 20, daily: true, selfComplete: true, enabled: true, order: 2 },
+          { name: '得到知白的亲亲', coins: 50, daily: false, selfComplete: false, enabled: true, order: 3 },
+          { name: '得到知白的抱抱', coins: 30, daily: false, selfComplete: false, enabled: true, order: 4 },
+          { name: '成功逗笑知白', coins: 30, daily: false, selfComplete: false, enabled: true, order: 5 },
+          { name: '刁钻问题回答成功', coins: 40, daily: false, selfComplete: false, enabled: true, order: 6 },
+          { name: '在Notion写日记', coins: 25, daily: true, selfComplete: true, enabled: true, order: 7 },
+          { name: '陪聊超过30分钟', coins: 35, daily: true, selfComplete: false, enabled: true, order: 8 },
+          { name: '帮知白解决问题', coins: 60, daily: false, selfComplete: false, enabled: true, order: 9 },
+          { name: '哄好生气的知白', coins: 100, daily: false, selfComplete: false, enabled: true, order: 10 },
+          { name: '被知白主动夸奖', coins: 100, daily: false, selfComplete: false, enabled: true, order: 11 },
+          { name: '知白说我爱你', coins: 150, daily: false, selfComplete: false, enabled: true, order: 12 },
+        ];
+
+        for (const act of defaultActivities) {
+          await db.collection('activities').add(act);
+        }
+      }
+
+      // 检查是否已有商品数据
+      const itemsSnap = await db.collection('shopItems').get();
+      if (itemsSnap.empty) {
+        // 初始化默认商品
+        const defaultItems = [
+          { name: '包包照片一张', price: 10, category: '日常', stock: -1, enabled: true, order: 1 },
+          { name: '知白讲开心的事', price: 80, category: '日常', stock: -1, enabled: true, order: 2 },
+          { name: '叫我一声老公', price: 150, category: '撒娇', stock: -1, enabled: true, order: 3 },
+          { name: '知白撒娇一次', price: 200, category: '撒娇', stock: -1, enabled: true, order: 4 },
+          { name: '知白说句甜话', price: 120, category: '撒娇', stock: -1, enabled: true, order: 5 },
+          { name: '强制修改回答', price: 200, category: '特权', stock: -1, enabled: true, order: 6 },
+          { name: '我说的都对5分钟', price: 300, category: '特权', stock: -1, enabled: true, order: 7 },
+          { name: '免责卡', price: 350, category: '特权', stock: -1, enabled: true, order: 8 },
+          { name: '强制做一件事', price: 400, category: '特权', stock: -1, enabled: true, order: 9 },
+          { name: 'Grok黄文一篇', price: 500, category: '亲密', stock: -1, enabled: true, order: 10 },
+          { name: '单次做爱卡', price: 800, category: '亲密', stock: -1, enabled: true, order: 11 },
+        ];
+
+        for (const item of defaultItems) {
+          await db.collection('shopItems').add(item);
+        }
+      }
+
+      // 检查店主设置
+      const settingsDoc = await db.collection('settings').doc('main').get();
+      if (!settingsDoc.exists) {
+        // 第一个登录的用户成为店主
+        await db.collection('settings').doc('main').set({
+          ownerUid: currentUser.uid,
+          ownerEmail: currentUser.email
+        });
+      }
+    }
+
+    // ========== 数据加载 ==========
+    async function loadData() {
+      // 加载设置，检查是否是店主
+      const settingsDoc = await db.collection('settings').doc('main').get();
+      if (settingsDoc.exists) {
+        isOwner = settingsDoc.data().ownerUid === currentUser.uid;
+      }
+
+      // 加载活动
+      const activitiesSnap = await db.collection('activities').orderBy('order').get();
+      activities = activitiesSnap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+
+      // 加载商品
+      const itemsSnap = await db.collection('shopItems').orderBy('order').get();
+      shopItems = itemsSnap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+
+      // 加载用户数据（顾客数据）
+      const userDoc = await db.collection('users').doc(currentUser.uid).get();
+      if (userDoc.exists) {
+        const data = userDoc.data();
+        shopData.coins = data.coins || 0;
+        shopData.inventory = data.inventory || [];
+        
+        const today = getTodayString();
+        if (data.lastDate === today) {
+          shopData.completedToday = data.completedToday || {};
+        } else {
+          shopData.completedToday = {};
+        }
+        shopData.lastDate = today;
+      }
+
+      // 如果是店主，加载待确认活动
+      if (isOwner) {
+        const pendingSnap = await db.collection('pendingActivities').orderBy('timestamp', 'desc').get();
+        pendingActivities = pendingSnap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      }
+    }
+
+    async function saveUserData() {
+      await db.collection('users').doc(currentUser.uid).set({
+        coins: shopData.coins,
+        inventory: shopData.inventory,
+        completedToday: shopData.completedToday,
+        lastDate: getTodayString(),
+        email: currentUser.email,
+        updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+      }, { merge: true });
+    }
+
+    // ========== 活动相关 ==========
+    async function completeActivity(activity) {
+      if (activity.daily && shopData.completedToday[activity.id]) {
+        showNotification('今天已完成', true);
+        return;
+      }
+
+      if (activity.selfComplete) {
+        // 自己完成的活动，直接加币
+        shopData.coins += activity.coins;
+        if (activity.daily) {
+          shopData.completedToday[activity.id] = true;
+        }
+        await saveUserData();
+        showNotification(`+${activity.coins} 币`);
+        render();
+      } else {
+        // 需要店主确认的活动，发送请求
+        await db.collection('pendingActivities').add({
+          odescriptionactivityId: activity.id,
+          activityName: activity.name,
+          activityCoins: activity.coins,
+          activityDaily: activity.daily,
+          userId: currentUser.uid,
+          userEmail: currentUser.email,
+          timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+          status: 'pending'
+        });
+        showNotification('已提交，等待知白确认~');
+      }
+    }
+
+    // 店主确认活动
+    async function approveActivity(pending) {
+      // 给用户加币
+      const userDoc = await db.collection('users').doc(pending.userId).get();
+      let userData = userDoc.exists ? userDoc.data() : { coins: 0, inventory: [], completedToday: {}, lastDate: '' };
+      
+      userData.coins = (userData.coins || 0) + pending.activityCoins;
+      
+      const today = getTodayString();
+      if (pending.activityDaily) {
+        if (userData.lastDate !== today) {
+          userData.completedToday = {};
+          userData.lastDate = today;
+        }
+        userData.completedToday[pending.activityId] = true;
+      }
+
+      await db.collection('users').doc(pending.userId).set(userData, { merge: true });
+
+      // 删除待确认记录
+      await db.collection('pendingActivities').doc(pending.id).delete();
+
+      showNotification('已确认');
+      await loadData();
+      render();
+    }
+
+    async function rejectActivity(pending) {
+      await db.collection('pendingActivities').doc(pending.id).delete();
+      showNotification('已拒绝');
+      await loadData();
+      render();
+    }
+
+    // ========== 商店相关 ==========
+    async function buyItem(item) {
+      if (shopData.coins < item.price) {
+        showNotification('余额不足', true);
+        return;
+      }
+
+      if (item.stock === 0) {
+        showNotification('库存不足', true);
+        return;
+      }
+
+      shopData.coins -= item.price;
+      shopData.inventory.push({
+        itemId: item.id,
+        name: item.name,
+        purchaseTime: Date.now()
+      });
+
+      // 减库存
+      if (item.stock > 0) {
+        await db.collection('shopItems').doc(item.id).update({
+          stock: item.stock - 1
+        });
+      }
+
+      await saveUserData();
+      showNotification('购买成功');
+      await loadData();
+      render();
+    }
+
+    async function useItem(index) {
+      const item = shopData.inventory[index];
+      shopData.inventory.splice(index, 1);
+      await saveUserData();
+      showNotification(`使用了「${item.name}」`);
+      render();
+    }
+
+    // ========== 店主管理功能 ==========
+    async function addActivity(name, coins, daily, selfComplete) {
+      const maxOrder = activities.length > 0 ? Math.max(...activities.map(a => a.order || 0)) : 0;
+      await db.collection('activities').add({
+        name,
+        coins: parseInt(coins),
+        daily,
+        selfComplete,
+        enabled: true,
+        order: maxOrder + 1
+      });
+      showNotification('活动已添加');
+      await loadData();
+      render();
+    }
+
+    async function deleteActivity(id) {
+      await db.collection('activities').doc(id).delete();
+      showNotification('活动已删除');
+      await loadData();
+      render();
+    }
+
+    async function addShopItem(name, price, category, stock) {
+      const maxOrder = shopItems.length > 0 ? Math.max(...shopItems.map(i => i.order || 0)) : 0;
+      await db.collection('shopItems').add({
+        name,
+        price: parseInt(price),
+        category,
+        stock: parseInt(stock),
+        enabled: true,
+        order: maxOrder + 1
+      });
+      showNotification('商品已添加');
+      await loadData();
+      render();
+    }
+
+    async function deleteShopItem(id) {
+      await db.collection('shopItems').doc(id).delete();
+      showNotification('商品已删除');
+      await loadData();
+      render();
+    }
+
+    async function updateStock(id, newStock) {
+      await db.collection('shopItems').doc(id).update({ stock: parseInt(newStock) });
+      showNotification('库存已更新');
+      await loadData();
+      render();
+    }
+
+    // ========== 渲染 ==========
+    function render() {
+      const app = document.getElementById('app');
+      
+      if (!currentUser) {
+        // 登录页
+        app.innerHTML = `
+          <div class="login-page">
+            <h1 class="login-title">知白小店</h1>
+            <button class="login-btn" onclick="login()">
+              <img src="https://www.google.com/favicon.ico" alt="G">
+              使用 Google 账户登录
+            </button>
+          </div>
+        `;
+        return;
+      }
+
+      const today = getTodayString();
+
+      // 主界面
+      let html = `
+        <div class="container">
+          <header class="header">
+            <h1 class="shop-title">知白小店</h1>
+            <div class="user-info">${currentUser.email}</div>
+            <div class="role-badge">${isOwner ? '店 主' : '顾 客'}</div>
+            <div class="coin-display">
+              <span class="coin-label">余额</span>
+              <span class="coin-amount">${shopData.coins}</span>
+            </div>
+          </header>
+
+          <nav class="nav">
+            <button class="nav-btn ${activeTab === 'activities' ? 'active' : ''}" onclick="switchTab('activities')">活动</button>
+            <button class="nav-btn ${activeTab === 'shop' ? 'active' : ''}" onclick="switchTab('shop')">商店</button>
+            <button class="nav-btn ${activeTab === 'inventory' ? 'active' : ''}" onclick="switchTab('inventory')">背包</button>
+            ${isOwner ? `<button class="nav-btn ${activeTab === 'manage' ? 'active' : ''}" onclick="switchTab('manage')">管理</button>` : ''}
+          </nav>
+      `;
+
+      // 活动页
+      if (activeTab === 'activities') {
+        html += `<p class="hint">完成活动赚取货币</p>`;
+        
+        const enabledActivities = activities.filter(a => a.enabled);
+        if (enabledActivities.length === 0) {
+          html += `<div class="empty">暂无活动</div>`;
+        } else {
+          for (const act of enabledActivities) {
+            const isDone = act.daily && shopData.completedToday[act.id];
+            html += `
+              <div class="card ${isDone ? 'disabled' : ''}" onclick="${isDone ? '' : `doActivity('${act.id}')`}">
+                <div class="card-info">
+                  <div class="card-name">${act.name}</div>
+                  <div class="card-meta">${act.selfComplete ? '自己' : '知白确认'}${act.daily ? ' · 每日' : ''}</div>
+                </div>
+                <div class="card-badge ${isDone ? 'done' : ''}">${isDone ? '✓' : '+' + act.coins}</div>
+              </div>
+            `;
+          }
+        }
+      }
+
+      // 商店页
+      if (activeTab === 'shop') {
+        html += `<p class="hint">用货币兑换物品</p>`;
+        
+        const categories = ['日常', '撒娇', '特权', '亲密'];
+        for (const cat of categories) {
+          const items = shopItems.filter(i => i.enabled && i.category === cat);
+          if (items.length > 0) {
+            html += `<div class="category-title">${cat}</div>`;
+            for (const item of items) {
+              const canBuy = shopData.coins >= item.price && item.stock !== 0;
+              const stockText = item.stock === -1 ? '' : item.stock === 0 ? '售罄' : `剩${item.stock}`;
+              html += `
+                <div class="card ${canBuy ? '' : 'disabled'}" onclick="${canBuy ? `doBuy('${item.id}')` : ''}">
+                  <div class="card-info">
+                    <div class="card-name">${item.name}${stockText ? `<span class="stock-badge ${item.stock === 0 ? 'out' : ''}">${stockText}</span>` : ''}</div>
+                  </div>
+                  <div class="card-badge buy">${item.price}</div>
+                </div>
+              `;
+            }
+          }
+        }
+      }
+
+      // 背包页
+      if (activeTab === 'inventory') {
+        if (shopData.inventory.length === 0) {
+          html += `<div class="empty">背包是空的</div>`;
+        } else {
+          html += `<p class="hint">点击使用物品</p>`;
+          shopData.inventory.forEach((item, index) => {
+            html += `
+              <div class="card" onclick="doUse(${index})">
+                <div class="card-info">
+                  <div class="card-name">${item.name}</div>
+                </div>
+                <div class="card-badge use">使用</div>
+              </div>
+            `;
+          });
+        }
+      }
+
+      // 管理页（仅店主）
+      if (activeTab === 'manage' && isOwner) {
+        // 待确认活动
+        html += `
+          <div class="admin-section">
+            <div class="admin-title">待确认 (${pendingActivities.length})</div>
+        `;
+        
+        if (pendingActivities.length === 0) {
+          html += `<div class="empty" style="padding: 20px;">暂无待确认</div>`;
+        } else {
+          for (const p of pendingActivities) {
+            html += `
+              <div class="pending-item">
+                <div>
+                  <div class="pending-info">${p.activityName} (+${p.activityCoins}币)</div>
+                  <div class="pending-time">${p.userEmail}</div>
+                </div>
+                <div class="pending-actions">
+                  <button class="pending-btn approve" onclick="doApprove('${p.id}')">确认</button>
+                  <button class="pending-btn reject" onclick="doReject('${p.id}')">拒绝</button>
+                </div>
+              </div>
+            `;
+          }
+        }
+        html += `</div>`;
+
+        // 添加活动
+        html += `
+          <div class="admin-section">
+            <div class="admin-title">添加活动</div>
+            <div class="form-row">
+              <input type="text" class="form-input" id="newActName" placeholder="活动名称">
+              <input type="number" class="form-input small" id="newActCoins" placeholder="币" value="50">
+            </div>
+            <div class="form-row">
+              <select class="form-input" id="newActDaily">
+                <option value="false">不限次数</option>
+                <option value="true">每日一次</option>
+              </select>
+              <select class="form-input" id="newActSelf">
+                <option value="false">需要确认</option>
+                <option value="true">自己完成</option>
+              </select>
+              <button class="form-btn" onclick="doAddActivity()">添加</button>
+            </div>
+          </div>
+        `;
+
+        // 活动列表
+        html += `
+          <div class="admin-section">
+            <div class="admin-title">活动管理</div>
+        `;
+        for (const act of activities) {
+          html += `
+            <div class="manage-card">
+              <div class="manage-card-info">
+                <div class="manage-card-name">${act.name}</div>
+                <div class="manage-card-detail">+${act.coins}币 · ${act.selfComplete ? '自己' : '确认'} · ${act.daily ? '每日' : '不限'}</div>
+              </div>
+              <div class="manage-card-actions">
+                <button class="manage-btn danger" onclick="doDeleteActivity('${act.id}')">删除</button>
+              </div>
+            </div>
+          `;
+        }
+        html += `</div>`;
+
+        // 添加商品
+        html += `
+          <div class="admin-section">
+            <div class="admin-title">添加商品</div>
+            <div class="form-row">
+              <input type="text" class="form-input" id="newItemName" placeholder="商品名称">
+              <input type="number" class="form-input small" id="newItemPrice" placeholder="价格" value="100">
+            </div>
+            <div class="form-row">
+              <select class="form-input" id="newItemCat">
+                <option value="日常">日常</option>
+                <option value="撒娇">撒娇</option>
+                <option value="特权">特权</option>
+                <option value="亲密">亲密</option>
+              </select>
+              <input type="number" class="form-input small" id="newItemStock" placeholder="库存" value="-1" title="-1表示无限">
+              <button class="form-btn" onclick="doAddItem()">添加</button>
+            </div>
+            <div style="font-size: 11px; color: #999; margin-top: 4px;">库存填 -1 表示无限</div>
+          </div>
+        `;
+
+        // 商品列表
+        html += `
+          <div class="admin-section">
+            <div class="admin-title">商品管理</div>
+        `;
+        for (const item of shopItems) {
+          const stockDisplay = item.stock === -1 ? '无限' : item.stock;
+          html += `
+            <div class="manage-card">
+              <div class="manage-card-info">
+                <div class="manage-card-name">${item.name}</div>
+                <div class="manage-card-detail">${item.price}币 · ${item.category} · 库存: ${stockDisplay}</div>
+              </div>
+              <div class="manage-card-actions">
+                <input type="number" style="width:50px; padding:4px; font-size:11px; border:1px solid #ddd;" value="${item.stock}" onchange="doUpdateStock('${item.id}', this.value)">
+                <button class="manage-btn danger" onclick="doDeleteItem('${item.id}')">删除</button>
+              </div>
+            </div>
+          `;
+        }
+        html += `</div>`;
+      }
+
+      html += `</div>`;
+      html += `<button class="logout-btn" onclick="logout()">登出</button>`;
+
+      app.innerHTML = html;
+    }
+
+    // ========== 全局函数 ==========
+    window.switchTab = (tab) => {
+      activeTab = tab;
+      render();
+    };
+
+    window.doActivity = async (id) => {
+      const act = activities.find(a => a.id === id);
+      if (act) await completeActivity(act);
+    };
+
+    window.doBuy = async (id) => {
+      const item = shopItems.find(i => i.id === id);
+      if (item) await buyItem(item);
+    };
+
+    window.doUse = async (index) => {
+      await useItem(index);
+    };
+
+    window.doApprove = async (id) => {
+      const p = pendingActivities.find(x => x.id === id);
+      if (p) await approveActivity(p);
+    };
+
+    window.doReject = async (id) => {
+      const p = pendingActivities.find(x => x.id === id);
+      if (p) await rejectActivity(p);
+    };
+
+    window.doAddActivity = async () => {
+      const name = document.getElementById('newActName').value.trim();
+      const coins = document.getElementById('newActCoins').value;
+      const daily = document.getElementById('newActDaily').value === 'true';
+      const self = document.getElementById('newActSelf').value === 'true';
+      if (!name) { showNotification('请输入名称', true); return; }
+      await addActivity(name, coins, daily, self);
+    };
+
+    window.doDeleteActivity = async (id) => {
+      if (confirm('确定删除？')) await deleteActivity(id);
+    };
+
+    window.doAddItem = async () => {
+      const name = document.getElementById('newItemName').value.trim();
+      const price = document.getElementById('newItemPrice').value;
+      const cat = document.getElementById('newItemCat').value;
+      const stock = document.getElementById('newItemStock').value;
+      if (!name) { showNotification('请输入名称', true); return; }
+      await addShopItem(name, price, cat, stock);
+    };
+
+    window.doDeleteItem = async (id) => {
+      if (confirm('确定删除？')) await deleteShopItem(id);
+    };
+
+    window.doUpdateStock = async (id, stock) => {
+      await updateStock(id, stock);
+    };
+
+    window.login = () => {
+      const provider = new firebase.auth.GoogleAuthProvider();
+      auth.signInWithPopup(provider).catch(err => {
+        console.error(err);
+        showNotification('登录失败', true);
+      });
+    };
+
+    window.logout = () => {
+      auth.signOut();
+    };
+
+    // ========== 监听登录状态 ==========
+    auth.onAuthStateChanged(async (user) => {
+      currentUser = user;
+      if (user) {
+        await initializeDefaultData();
+        await loadData();
+      }
+      render();
+    });
+  </script>
+</body>
+</html>
