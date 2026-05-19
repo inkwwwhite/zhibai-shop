@@ -1,0 +1,28 @@
+{
+  "name": "知白小店",
+  "short_name": "知白小店",
+  "description": "知白和砚池的专属小店",
+  "start_url": "/zhibai-shop/",
+  "display": "standalone",
+  "background_color": "#fafafa",
+  "theme_color": "#333333",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
